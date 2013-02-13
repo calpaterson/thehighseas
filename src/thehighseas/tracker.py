@@ -1,10 +1,10 @@
 from base64 import b64encode, b64decode
+import time
 
 from bencode import bencode, bdecode
 from bottle import Bottle, request, response, abort
 from redis import StrictRedis
 import simplejson
-import time
 
 app = Bottle()
 
@@ -37,6 +37,23 @@ def build_listing(announcement):
             listing["incomplete"] += 1
         listing["peers"].append(peer.to_dict())
     return bencode(listing)
+
+def scrape_stats():
+    info_hashes = [hash for hash in _redis_connection_.keys("*.swarm")]
+    stats = {}
+    for info_hash in info_hashes:
+        peers = [Peer.from_json(e) for e in _redis_connection_.hvals(info_hash)]
+        sub_stats = {"downloaded": 0}
+        sub_stats["complete"] = 0
+        sub_stats["incomplete"] = 0
+        for peer in peers:
+            if peer.is_complete():
+                sub_stats["complete"] += 1
+            else:
+                sub_stats["incomplete"] += 1
+        stats[info_hash] = sub_stats
+    return bencode(stats)
+
 
 class Peer(object):
     def __init__(self, announcement=None):
@@ -91,8 +108,12 @@ class Peer(object):
         peer.downloaded = dict_["downloaded"]
         peer.left = dict_["left"]
         return peer
+
+@app.get("/scrape")
+def scrape():
+    return scrape_stats()
         
 @app.get("/announce")
-def users():
+def announce():
     announcement = request.query
     return build_listing(announcement)
