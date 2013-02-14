@@ -14,46 +14,58 @@ _tracker_id_ = "thehighseas"
 
 _interval_ = 5
 
-def build_listing(announcement):
+def update_peer_info(announcement):
     this_peer = Peer(announcement)
     info_hash = announcement["info_hash"].encode("hex") + ".swarm"
     _redis_connection_.hset(info_hash, this_peer.peer_id,
                             this_peer.to_json())
-    
+    if "event" in announcement:
+        record_event(announcement)
+
+def build_listing(announcement):
     listing = {
         "tracker id": _tracker_id_,
         "interval": _interval_,
-        "complete": 0,
-        "incomplete": 0,
-        "peers": []
         }
 
+    info_hash = announcement["info_hash"].encode("hex")
+
     values = _redis_connection_.hvals(info_hash)
-    peers = [Peer.from_json(e) for e in values]
-    for peer in peers:
-        if peer.is_complete():
-            listing["complete"] += 1
-        else:
-            listing["incomplete"] += 1
-        listing["peers"].append(peer.to_dict())
+    listing["peers"] = [Peer.from_json(e).to_dict() for e in values]
+
+    listing.update(stats_for_info_hash(info_hash))
     return bencode(listing)
 
+def stats_for_info_hash(info_hash):
+    peers = [Peer.from_json(e) for e in _redis_connection_.hvals(info_hash)]
+    stats = {
+        "downloaded": 0,
+        "complete": 0,
+        "incomplete": 0}
+    for peer in peers:
+        if peer.is_complete():
+            stats["complete"] += 1
+        else:
+            stats["incomplete"] += 1
+    return stats
+
 def scrape_stats():
-    info_hashes = [hash for hash in _redis_connection_.keys("*.swarm")]
+    info_hashes = _redis_connection_.keys("*.swarm")
     stats = {}
     for info_hash in info_hashes:
-        peers = [Peer.from_json(e) for e in _redis_connection_.hvals(info_hash)]
-        sub_stats = {"downloaded": 0}
-        sub_stats["complete"] = 0
-        sub_stats["incomplete"] = 0
-        for peer in peers:
-            if peer.is_complete():
-                sub_stats["complete"] += 1
-            else:
-                sub_stats["incomplete"] += 1
-        stats[info_hash] = sub_stats
+        stats[info_hash] = stats_for_info_hash(info_hash)
     return bencode(stats)
 
+def record_event(announcement):
+    event = annoucement["event"]
+    if event == "completed":
+        # Incement xxxx.completed
+        pass
+    elif event == "stopped":
+        # Remove peer
+        pass
+    elif event == "started":
+        pass
 
 class Peer(object):
     def __init__(self, announcement=None):
@@ -88,7 +100,8 @@ class Peer(object):
              "last_seen": self.last_seen,
              "uploaded": self.uploaded,
              "downloaded": self.downloaded,
-             "left": self.left})
+             "left": self.left},
+            separators=(',',':'))
 
     def to_dict(self):
         return {"peer_id": self.peer_id,
@@ -116,4 +129,5 @@ def scrape():
 @app.get("/announce")
 def announce():
     announcement = request.query
+    update_peer_info(announcement)
     return build_listing(announcement)
