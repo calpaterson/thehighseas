@@ -2,7 +2,7 @@
   <head>
   </head>
   <body>
-    <h1>Bittorrent Tracker</h1>
+    <h1>Bittorrent tracker</h1>
     <h2>Upload a torrent file</h2>
     <form method="POST" enctype="multipart/form-data" action="/upload">
       <input name="metainfo-file" type="file">
