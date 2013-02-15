@@ -70,11 +70,14 @@ class Swarm(object):
 
     @classmethod
     def all(cls):
-        def from_hex_hash(hex_hash):
-            s = Swarm()
-            s.info_hash = hex_hash
-            return s
-        return (from_hex_hash(hash) for hash in redis_connection.smembers("hashes"))
+        return (cls.from_hex_hash(hash)
+                for hash in redis_connection.smembers("hashes"))
+
+    @classmethod
+    def from_hex_hash(cls, hex_hash):
+        s = Swarm()
+        s.info_hash = hex_hash
+        return s
 
     @classmethod
     def from_metainfo_file(cls, metainfo_file, filename):

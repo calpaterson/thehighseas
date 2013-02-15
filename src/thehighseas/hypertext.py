@@ -19,9 +19,13 @@ _templates_ = TemplateLookup(
 def index():
     return _templates_.get_template("index.mako").render(swarms=Swarm.all())
 
-@app.get("/upload")
-def upload_form():
-    return _templates_.get_template("upload_form.mako").render()
+@app.get("/torrent/:hex_hash")
+def torrent(hex_hash):
+    swarm = Swarm.from_hex_hash(hex_hash)
+    response.set_header("Content-Type", "application/x-bittorrent")
+    response.set_header("Content-Disposition",
+                        "filename={name}.torrent".format(name=swarm.name()))
+    return swarm.to_metainfo()
 
 @app.post("/upload")
 def upload():
