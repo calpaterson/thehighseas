@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
+set -x
 
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $ROOT_DIR
 
-REDIS_UP=`echo 'PING' | redis-cli | grep PONG`
+echo 'PING' | redis-cli | grep PONG >> /dev/null
+REDIS_UP=$?
 if [[ $REDIS_UP != 0 ]]
 then
     echo '!!!Redis is not up and running!!!'
