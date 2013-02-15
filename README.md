@@ -14,9 +14,6 @@ Features
     - Download torrent files
     - Check the status of swarms
 
-THS also comes with a very simple web interface built in, so you can
-upload, download and check the status of swarms.
-
 Requirements
 ------------
 
