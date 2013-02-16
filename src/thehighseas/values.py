@@ -6,9 +6,7 @@ from bencode import bencode, bdecode
 from bottle import request
 import simplejson
 
-from constants import redis_connection
-
-_announce_url_ = "http://localhost:11235/tracker/announce"
+from constants import redis_connection, announce_url
 
 class NoInfoException(Exception):
     pass
@@ -84,7 +82,7 @@ class Swarm(object):
         metainfo = bdecode(metainfo_file.read())
         s = Swarm()
         s._save_info_(metainfo["info"])
-        s._ensure_recorded_()        
+        s._ensure_recorded_()
         return s
 
     @classmethod

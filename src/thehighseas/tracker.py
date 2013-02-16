@@ -8,9 +8,8 @@ from constants import (
     redis_connection,
     interval
     )
+from rootapp import app
 from values import Peer, Swarm
-
-app = Bottle()
 
 def update_peer_info(announcement):
     peer = Peer(announcement)
@@ -54,11 +53,11 @@ def scrape_stats():
         stats[info_hash] = swarm_stats(info_hash)
     return bencode(stats)
 
-@app.get("/scrape")
+@app.get("/tracker/scrape")
 def scrape():
     return scrape_stats()
-        
-@app.get("/announce")
+
+@app.get("/tracker/announce")
 def announce():
     announcement = request.query
     update_peer_info(announcement)

@@ -6,13 +6,14 @@ import bottle
 from thehighseas import (
     rootapp,
     hypertext,
-    tracker
+    tracker,
+    constants
 )
 
 def main():
     try:
-        rootapp.app.mount("/tracker", tracker.app)
-        bottle.run(port=11235, server="gevent", app=rootapp.app)
+        bottle.run(host=constants.host, port=constants.port,
+                   server="gevent", app=rootapp.app)
     except KeyboardInterrupt:
         print("Quitting!")
 
