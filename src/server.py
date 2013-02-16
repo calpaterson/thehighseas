@@ -1,6 +1,6 @@
 import cProfile
 
-from gevent import monkey; monkey.patch_all()
+# from gevent import monkey; monkey.patch_all()
 import bottle
 
 from thehighseas import (
@@ -12,8 +12,10 @@ from thehighseas import (
 
 def main():
     try:
-        bottle.run(host=constants.host, port=constants.port,
-                   server="gevent", app=rootapp.app)
+        bottle.run(host=constants.host,
+                   port=constants.port,
+                   # server="gevent",
+                   app=rootapp.app)
     except KeyboardInterrupt:
         print("Quitting!")
 

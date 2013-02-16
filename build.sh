@@ -25,4 +25,6 @@ source bin/activate
 echo '****Downloading and building dependencies****'
 pip install -r requirements
 
+touch .thehighseas-built
+
 echo '****Now run with ./run.sh****'

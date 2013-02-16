@@ -11,6 +11,11 @@ then
     exit 1
 fi
 
+if [[ ! -f .thehighseas-built ]]
+then
+    ./build.sh
+fi
+
 echo '****Entering environment****'
 source bin/activate
 
