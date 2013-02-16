@@ -98,7 +98,7 @@ class Peer(object):
     def __init__(self, announcement=None):
         if announcement is not None:
             self.peer_id = announcement["peer_id"]
-            self.port = announcement["port"]
+            self.port = int(announcement["port"])
             if announcement["left"] == "0":
                 self.status = "complete"
             else:
