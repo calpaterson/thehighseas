@@ -18,19 +18,17 @@
 	  <td>Infohash</td>
 	</tr>
 	% for swarm in swarms:
+	% if swarm.name() != "-":
 	<tr>
 	  <td>
-	    % if swarm.name() != "-":
 	    <a href="/torrent/${swarm.info_hash}">${swarm.name()}</a>
-	    % else:
-	    ${swarm.name()}
-	    % endif
 	  </td>
 	  <td>${swarm.number_of_seeds()}</td>
 	  <td>${swarm.number_of_leechers()}</td>
 	  <td>${swarm.times_downloaded()}</td>
 	  <td>${swarm.info_hash}</td>
 	</tr>
+	% endif
         % endfor
       </table>
   </body>

@@ -8,7 +8,6 @@ from constants import (
     redis_connection,
     interval
     )
-from rootapp import app
 from values import Peer, Swarm
 
 def update_peer_info(announcement):
@@ -40,10 +39,11 @@ def swarm_stats(info_hash):
         "complete": 0,
         "incomplete": 0}
     for peer in peers:
-        if peer.is_complete():
-            stats["complete"] += 1
-        else:
-            stats["incomplete"] += 1
+        if peer.name() != "-":
+            if peer.is_complete():
+                stats["complete"] += 1
+            else:
+                stats["incomplete"] += 1
     return stats
 
 def scrape_stats():
