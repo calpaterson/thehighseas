@@ -8,6 +8,7 @@ from constants import (
     redis_connection,
     interval
     )
+from rootapp import app
 from values import Peer, Swarm
 
 def update_peer_info(announcement):

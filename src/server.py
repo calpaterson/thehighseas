@@ -1,6 +1,5 @@
-import cProfile
+from wsgiref.simple_server import make_server
 
-# from gevent import monkey; monkey.patch_all()
 import bottle
 
 from thehighseas import (
@@ -12,10 +11,8 @@ from thehighseas import (
 
 def main():
     try:
-        bottle.run(host=constants.host,
-                   port=constants.port,
-                   # server="gevent",
-                   app=rootapp.app)
+        http_server = make_server("", int(constants.port), rootapp.app)
+        http_server.serve_forever()
     except KeyboardInterrupt:
         print("Quitting!")
 

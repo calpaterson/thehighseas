@@ -1,22 +1,34 @@
 The High Seas - an ultra straightforward bittorrent tracker
 ===========================================================
 
-The High Seas is a very simple and straightforward bittorrent tracker
-designed to get you up and running with the minimum of fuss.
+The High Seas is an easy to use bittorrent tracker with a simple web interface.
+It is also fast.
 
 Features
 --------
 
-* No setup whatsoever, just execute ```thehighseas```
+* No setup whatsoever, just execute ```./thehighseas```
 * A bittorrent tracker
   - All tracking is "public" (currently)
   - Scrape API supported
-  - "Secret" swarms
-    - See below
+  - "Secret" swarms (see below for details)
 * A simple web interface
   - Upload torrent files
   - Download torrent files
   - Check the status of swarms
+
+Getting Started
+---------------
+
+### Prerequisites
+
+* Python2, with pip and virtualenv
+* Redis
+
+### Running
+
+- Execute ```./thehighseas```
+- Visit [http://localhost:11235](http://localhost:11235)
 
 "Secret" swarms
 ---------------
@@ -33,24 +45,3 @@ though, files are private.
 In this case, you don't need to upload the metainfo file to THS.  Just start
 sharing - THS will track any swarm that announces to it.  You'll need to
 distribute the metainfo file yourself though.
-
-Getting Started
----------------
-
-### Prerequisites
-
-* Python2, with pip and virtualenv
-* Redis
-
-### Running
-
-Execute ./thehighseas
-
-THS does not detach from the terminal.  Closing the terminal or hitting ^C
-("ctrl-c") will shutdown THS.  If you want to run THS on a permanent basis,
-consider using a [process
-supervisor](http://en.wikipedia.org/wiki/Process_supervision), such as:
-
-* [Upstart](http://upstart.ubuntu.com/)
-* [Runit](http://mmonit.com/monit/)
-* [Monit](http://smarden.org/runit/)
