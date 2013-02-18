@@ -10,14 +10,29 @@ from constants import redis_connection
 from values import Swarm
 
 _template_dir_ = "/".join(inspect.getfile(rootapp).split("/")[:-1] + ["templates/"])
+_css_dir_ = "/".join(inspect.getfile(rootapp).split("/")[:-1] + ["css/"])
 
 _templates_ = TemplateLookup(
     directories=[_template_dir_],
-    module_directory='/tmp/thehighseas-templates')      
+    module_directory='/tmp/thehighseas-templates')
 
 @app.get("/")
 def index():
     return _templates_.get_template("index.mako").render(swarms=Swarm.all())
+
+@app.get("/upload")
+def upload_form():
+    return _templates_.get_template("upload.mako").render()
+
+@app.get("/css/bootstrap.min.css")
+def index():
+    response.set_header("Content-Type", "text/css")
+    return open(_css_dir_ + "bootstrap.min.css")
+
+@app.get("/css/style.css")
+def index():
+    response.set_header("Content-Type", "text/css")
+    return open(_css_dir_ + "style.css")
 
 @app.get("/torrent/:hex_hash")
 def torrent(hex_hash):
