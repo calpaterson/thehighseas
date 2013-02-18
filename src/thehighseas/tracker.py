@@ -33,30 +33,12 @@ def build_listing(announcement):
         }
     return bencode(listing)
 
-def swarm_stats(info_hash):
-    peers = [Peer.from_json(e) for e in redis_connection.hvals(info_hash)]
-    stats = {
-        "downloaded": 0,
-        "complete": 0,
-        "incomplete": 0}
-    for peer in peers:
-        if peer.name() != "-":
-            if peer.is_complete():
-                stats["complete"] += 1
-            else:
-                stats["incomplete"] += 1
-    return stats
-
-def scrape_stats():
-    info_hashes = redis_connection.keys("*.swarm")
-    stats = {}
-    for info_hash in info_hashes:
-        stats[info_hash] = swarm_stats(info_hash)
-    return bencode(stats)
-
 @app.get("/tracker/scrape")
 def scrape():
-    return scrape_stats()
+    stats = {}
+    for swarm in Swarm.nonsecret():
+        stats.update(swam.stats())
+    return bencode(stats)
 
 @app.get("/tracker/announce")
 def announce():

@@ -66,10 +66,28 @@ class Swarm(object):
     def _ensure_recorded_(self):
         redis_connection.sadd("hashes", self.info_hash)
 
+    def is_secret(self):
+        return redis_connection.get(self.info_hash + ".info") is None
+
+    def stats(self):
+        s = {"downloaded": self.times_downloaded(),
+             "complete": self.seeds(),
+             "incomplete": self.leechers()}
+        if not is_secret(self):
+            s["name"] = self.name()
+        return s
+
     @classmethod
     def all(cls):
         return (cls.from_hex_hash(hash)
                 for hash in redis_connection.smembers("hashes"))
+
+    @classmethod
+    def nonsecret(cls):
+        for hexhash in redis_connection.smembers("hashes"):
+            swarm = cls.from_hex_hash(hexhash)
+            if not swarm.is_secret():
+                yield swarm
 
     @classmethod
     def from_hex_hash(cls, hex_hash):
