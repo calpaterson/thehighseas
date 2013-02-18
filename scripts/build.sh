@@ -23,8 +23,6 @@ echo '****Entering environment****'
 source bin/activate
 
 echo '****Downloading and building dependencies****'
-pip install -r requirements
+pip install -r scripts/requirements
 
 touch .thehighseas-built
-
-echo '****Now run with ./run.sh****'
