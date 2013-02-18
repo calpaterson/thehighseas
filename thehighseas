@@ -13,7 +13,7 @@ fi
 
 if [[ ! -f .thehighseas-built ]]
 then
-    ./build.sh
+    $ROOT_DIR/scripts/build.sh
 fi
 
 echo '****Entering environment****'

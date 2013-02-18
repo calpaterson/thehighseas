@@ -71,9 +71,9 @@ class Swarm(object):
 
     def stats(self):
         s = {"downloaded": self.times_downloaded(),
-             "complete": self.seeds(),
-             "incomplete": self.leechers()}
-        if not is_secret(self):
+             "complete": self.number_of_seeds(),
+             "incomplete": self.number_of_leechers()}
+        if not self.is_secret():
             s["name"] = self.name()
         return s
 

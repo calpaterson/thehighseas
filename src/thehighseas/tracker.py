@@ -35,10 +35,14 @@ def build_listing(announcement):
 
 @app.get("/tracker/scrape")
 def scrape():
-    stats = {}
-    for swarm in Swarm.nonsecret():
-        stats.update(swam.stats())
-    return bencode(stats)
+    try:
+        stats = Swarm.from_hex_hash(request.query["infohash"]).stats()
+        return bencode(stats)
+    except KeyError:
+        stats = {}
+        for swarm in Swarm.nonsecret():
+            stats.update(swam.stats())
+        return bencode(stats)
 
 @app.get("/tracker/announce")
 def announce():
