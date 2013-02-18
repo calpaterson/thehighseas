@@ -92,36 +92,24 @@ class Swarm(object):
         s._ensure_recorded_()
         return s
 
-class Peer(object):
-    def __init__(self, announcement=None):
-        if announcement is not None:
-            self.peer_id = announcement["peer_id"]
-            self.port = int(announcement["port"])
-            if announcement["left"] == "0":
-                self.status = "complete"
-            else:
-                self.status = "incomplete"
-            self.last_seen = int(time.time())
-            try:
-                self.ip = announcement["ip"]
-            except KeyError:
-                self.ip = request.remote_addr
-            self.uploaded = int(announcement["uploaded"])
-            self.downloaded = int(announcement["downloaded"])
-            self.left = int(announcement["left"])
+class Clock(object):
+    def now(self):
+        return int(time.time())
 
+_clock_ = Clock()
+
+class Peer(object):
     def __eq__(self, other):
         return self.peer_id == other.peer_id
 
     def is_complete(self):
-        return self.status == "complete"
+        return self.left == 0
 
     def to_json(self):
         return simplejson.dumps(
             {"peer_id": b64encode(self.peer_id),
              "ip": self.ip,
              "port": self.port,
-             "status": self.status,
              "last_seen": self.last_seen,
              "uploaded": self.uploaded,
              "downloaded": self.downloaded,
@@ -136,13 +124,27 @@ class Peer(object):
     @classmethod
     def from_json(cls, json_string):
         dict_ = simplejson.loads(json_string)
-        peer = Peer()
+        peer = cls()
         peer.peer_id = b64decode(dict_["peer_id"])
         peer.ip = dict_["ip"]
         peer.port = dict_["port"]
-        peer.status = dict_["status"]
         peer.last_seen = dict_["last_seen"]
         peer.uploaded = dict_["uploaded"]
         peer.downloaded = dict_["downloaded"]
         peer.left = dict_["left"]
+        return peer
+
+    @classmethod
+    def from_announcement(cls, announcement, ip=None, _clock=_clock_):
+        peer = cls()
+        peer.peer_id = announcement["peer_id"]
+        peer.port = int(announcement["port"])
+        peer.last_seen = _clock.now()
+        try:
+            peer.ip = announcement["ip"]
+        except KeyError:
+            peer.ip = ip
+        peer.uploaded = int(announcement["uploaded"])
+        peer.downloaded = int(announcement["downloaded"])
+        peer.left = int(announcement["left"])
         return peer

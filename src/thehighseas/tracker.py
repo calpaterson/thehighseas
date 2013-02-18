@@ -12,7 +12,7 @@ from rootapp import app
 from values import Peer, Swarm
 
 def update_peer_info(announcement):
-    peer = Peer(announcement)
+    peer = Peer.from_announcement(announcement, ip=request.remote_addr)
     swarm = Swarm.from_announcement(announcement)
     if "event" in announcement and announcement["event"] == "completed":
         swarm.completed_by(peer)
