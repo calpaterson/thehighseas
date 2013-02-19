@@ -7,7 +7,7 @@ from mako.lookup import TemplateLookup
 from rootapp import app
 import rootapp
 from constants import redis_connection, announce_url
-from values import Swarm
+from domain import Swarm
 
 _template_dir_ = "/".join(inspect.getfile(rootapp).split("/")[:-1] + ["templates/"])
 _css_dir_ = "/".join(inspect.getfile(rootapp).split("/")[:-1] + ["css/"])

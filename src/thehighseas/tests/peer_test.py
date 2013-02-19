@@ -5,7 +5,7 @@ from hamcrest import *
 import simplejson
 import ipaddr
 
-from values import Peer, Clock, NonIPv4AddressException
+from domain import Peer, Clock, NonIPv4AddressException
 
 class FakeClock(object):
     def __init__(self, canned_time):

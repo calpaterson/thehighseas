@@ -9,7 +9,7 @@ from constants import (
     interval
     )
 from rootapp import app
-from values import Peer, Swarm
+from domain import Peer, Swarm
 
 def update_peer_info(announcement):
     peer = Peer.from_announcement(announcement, ip=request.remote_addr)
