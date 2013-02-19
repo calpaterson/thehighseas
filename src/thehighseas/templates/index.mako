@@ -28,7 +28,7 @@
 	      <td>Name</td>
 	      <td>Seeds</td>
 	      <td>Leechers</td>
-	      <td>Time Downloaded</td>
+	      <td>Times Downloaded</td>
 	      <td>Infohash</td>
 	    </tr>
 	    % for swarm in swarms:
