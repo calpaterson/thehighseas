@@ -46,7 +46,7 @@ class Swarm(object):
     def to_metainfo(self):
         try:
             info_as_dict = bdecode(redis_connection.get(self.info_hash + ".info"))
-            return bencode({"announce": _announce_url_,
+            return bencode({"announce": announce_url,
                             "info": info_as_dict })
         except TypeError:
             raise NoInfoException()
