@@ -122,16 +122,23 @@ class Swarm(object):
         return s
 
 class Clock(object):
+    """A facade for Python's date and time libraries.  This is present
+    to save having to monkeypatch things in tests."""
     def now(self):
         return int(time.time())
 
 _clock_ = Clock()
 
 class Peer(object):
+    """A peer (in a swarm)."""
     def __eq__(self, other):
         return self.peer_id == other.peer_id
 
     def is_complete(self):
+        """Return True if the peer has completed the fileset, False
+        otherwise.
+
+        """
         return self.left == 0
 
     def to_json(self):
@@ -146,11 +153,13 @@ class Peer(object):
             separators=(',',':'))
 
     def to_dict(self):
+        """Return a dict for bencoding in a non-compact listing"""
         return {"peer_id": self.peer_id,
                 "ip": self.ip.exploded,
                 "port": self.port}
 
     def to_binary(self):
+        """Return binary for a compact listing"""
         if self.ip.version != 4:
             raise NonIPv4AddressException()
         return self.ip.packed + struct.pack("!H", self.port)
@@ -170,6 +179,7 @@ class Peer(object):
 
     @classmethod
     def from_announcement(cls, announcement, ip=None, _clock=_clock_):
+        """Return the Peer making this announcement"""
         peer = cls()
         peer.peer_id = announcement["peer_id"]
         peer.port = int(announcement["port"])
