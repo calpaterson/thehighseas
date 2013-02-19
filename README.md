@@ -5,6 +5,11 @@ The High Seas is an easy to use bittorrent tracker with a very simple
 web interface.  It was created with the aim of making it *much easier*
 to start a bittorrent tracker.
 
+Screenshot
+----------
+
+![A screenshot of THS](/img/screenshot.png "Screenshot")
+
 Features
 --------
 
