@@ -34,9 +34,9 @@
 	    % for swarm in swarms:
 	    % if swarm.name() != "-":
 	    <tr>
-	      <td>
-		<a href="/torrent/${swarm.info_hash}">${swarm.name()}</a>
-	      </td>
+	      <td>${swarm.name()}
+		(<a href="/torrent/${swarm.info_hash}"
+		    >Download</a>)</td>
 	      <td>${swarm.number_of_seeds()}</td>
 	      <td>${swarm.number_of_leechers()}</td>
 	      <td>${swarm.times_downloaded()}</td>
