@@ -1,8 +1,9 @@
-The High Seas - an ultra straightforward bittorrent tracker
+The High Seas - a very straightforward bittorrent tracker
 ===========================================================
 
-The High Seas is an easy to use bittorrent tracker with a simple web interface.
-It is also fast.
+The High Seas is an easy to use bittorrent tracker with a very simple
+web interface.  It was created with the aim of making it *much easier*
+to start a bittorrent tracker.
 
 Features
 --------
@@ -22,13 +23,20 @@ Getting Started
 
 ### Prerequisites
 
-* Python2, with pip and virtualenv
-* Redis
+- Python (version 2.x), with pip and virtualenv
+    - On debian/ubuntu these are the packages:
+       - ```python2.7```
+       - ```python-pip```
+       - ```python-virtualenv```
+- Redis
+    - On debian/ubuntu this is the package:
+       - ```redis-server```
 
 ### Running
 
 - Execute ```./thehighseas```
 - Visit [http://localhost:11235](http://localhost:11235)
+- Edit the configuration in ```config.sh``` before you deploy properly
 
 "Secret" swarms
 ---------------
@@ -45,3 +53,8 @@ though, files are private.
 In this case, you don't need to upload the metainfo file to THS.  Just start
 sharing - THS will track any swarm that announces to it.  You'll need to
 distribute the metainfo file yourself though.
+
+Contact
+-------
+
+Email me with any questions: cal - AT - calpaterson - DOT - com
