@@ -23,6 +23,6 @@ echo '****Entering environment****'
 source bin/activate
 
 echo '****Downloading and building dependencies****'
-pip install -r scripts/requirements
+pip install --use-mirrors -r scripts/requirements
 
 touch .thehighseas-built
