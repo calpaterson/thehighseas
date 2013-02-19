@@ -18,6 +18,7 @@ fi
 
 echo '****Entering environment****'
 source bin/activate
+source config.sh
 
 echo '****Starting up****'
 python src/server.py
