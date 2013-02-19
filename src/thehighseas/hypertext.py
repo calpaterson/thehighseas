@@ -6,7 +6,7 @@ from mako.lookup import TemplateLookup
 
 from rootapp import app
 import rootapp
-from constants import redis_connection
+from constants import redis_connection, announce_url
 from values import Swarm
 
 _template_dir_ = "/".join(inspect.getfile(rootapp).split("/")[:-1] + ["templates/"])
@@ -22,7 +22,7 @@ def index():
 
 @app.get("/upload")
 def upload_form():
-    return _templates_.get_template("upload.mako").render()
+    return _templates_.get_template("upload.mako").render(announce_url=announce_url)
 
 @app.get("/css/bootstrap.min.css")
 def index():

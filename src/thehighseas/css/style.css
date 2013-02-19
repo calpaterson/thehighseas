@@ -5,3 +5,7 @@
 h1 {
         text-align: center;
 }
+
+.announce-url {
+    font-family: monospace;
+}
