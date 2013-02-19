@@ -1,14 +1,19 @@
 from base64 import b64encode, b64decode
 import hashlib
 import time
+import struct
 
 from bencode import bencode, bdecode
 from bottle import request
 import simplejson
+import ipaddr
 
 from constants import redis_connection, announce_url
 
 class NoInfoException(Exception):
+    pass
+
+class NonIPv4AddressException(Exception):
     pass
 
 class Swarm(object):
@@ -127,7 +132,7 @@ class Peer(object):
     def to_json(self):
         return simplejson.dumps(
             {"peer_id": b64encode(self.peer_id),
-             "ip": self.ip,
+             "ip": self.ip.exploded,
              "port": self.port,
              "last_seen": self.last_seen,
              "uploaded": self.uploaded,
@@ -137,15 +142,20 @@ class Peer(object):
 
     def to_dict(self):
         return {"peer_id": self.peer_id,
-                "ip": self.ip,
+                "ip": self.ip.exploded,
                 "port": self.port}
+
+    def to_binary(self):
+        if self.ip.version != 4:
+            raise NonIPv4AddressException()
+        return self.ip.packed + struct.pack("!H", self.port)
 
     @classmethod
     def from_json(cls, json_string):
         dict_ = simplejson.loads(json_string)
         peer = cls()
         peer.peer_id = b64decode(dict_["peer_id"])
-        peer.ip = dict_["ip"]
+        peer.ip = ipaddr.IPAddress(dict_["ip"])
         peer.port = dict_["port"]
         peer.last_seen = dict_["last_seen"]
         peer.uploaded = dict_["uploaded"]
@@ -160,9 +170,9 @@ class Peer(object):
         peer.port = int(announcement["port"])
         peer.last_seen = _clock.now()
         try:
-            peer.ip = announcement["ip"]
+            peer.ip = ipaddr.IPAddress(announcement["ip"])
         except KeyError:
-            peer.ip = ip
+            peer.ip = ipaddr.IPAddress(ip)
         peer.uploaded = int(announcement["uploaded"])
         peer.downloaded = int(announcement["downloaded"])
         peer.left = int(announcement["left"])
