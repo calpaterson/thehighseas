@@ -23,14 +23,11 @@ def update_peer_info(announcement):
 
 def build_listing(announcement):
     swarm = Swarm.from_announcement(announcement)
-    listing = {
-        "tracker id": tracker_id,
-        "interval": interval,
-        "peers": swarm.peers(),
-        "downloaded": swarm.times_downloaded(),
-        "complete": swarm.number_of_seeds(),
-        "incomplete": swarm.number_of_leechers()
-        }
+    listing = swarm.listing()
+    listing.update({
+            "tracker id": tracker_id,
+            "interval": interval
+            })
     return bencode(listing)
 
 @app.get("/tracker/scrape")

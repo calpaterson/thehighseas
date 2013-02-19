@@ -83,6 +83,11 @@ class Swarm(object):
             s["name"] = self.name()
         return s
 
+    def listing(self, number_of_peers=None, compact=False):
+        s = {"peers": self.peers()}
+        s.update(self.stats())
+        return s
+
     @classmethod
     def all(cls):
         return (cls.from_hex_hash(hash)
