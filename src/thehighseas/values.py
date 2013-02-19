@@ -70,7 +70,6 @@ class Swarm(object):
 
     def _ensure_recorded_(self):
         redis_connection.sadd("hashes", self.info_hash)
-        redis_connection.save()
 
     def is_secret(self):
         return redis_connection.get(self.info_hash + ".info") is None
@@ -112,6 +111,7 @@ class Swarm(object):
         s = Swarm()
         s._save_info_(metainfo["info"])
         s._ensure_recorded_()
+        redis_connection.save()
         return s
 
     @classmethod
