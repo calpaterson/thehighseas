@@ -26,6 +26,7 @@
 	  <table class="table table-striped table-bordered">
 	    <tr>
 	      <td>Name</td>
+	      <td>Size</td>
 	      <td>Seeds</td>
 	      <td>Leechers</td>
 	      <td>Times Downloaded</td>
@@ -37,6 +38,7 @@
 	      <td>${swarm.name()}
 		(<a href="/torrent/${swarm.info_hash}"
 		    >Download</a>)</td>
+	      <td>${swarm.fileset().human_size()}</td>
 	      <td>${swarm.number_of_seeds()}</td>
 	      <td>${swarm.number_of_leechers()}</td>
 	      <td>${swarm.times_downloaded()}</td>

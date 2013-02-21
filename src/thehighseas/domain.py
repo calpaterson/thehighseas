@@ -2,11 +2,13 @@ from base64 import b64encode, b64decode
 import hashlib
 import time
 import struct
+import abc
 
 from bencode import bencode, bdecode
 from bottle import request
 import simplejson
 import ipaddr
+import hurry.filesize
 
 from constants import redis_connection, announce_url
 
@@ -15,6 +17,36 @@ class NoInfoException(Exception):
 
 class NonIPv4AddressException(Exception):
     pass
+
+class FileSet(object):
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def size(self):
+        pass
+
+    def human_size(self):
+        return hurry.filesize.size(self.size())
+
+    def name(self):
+        return self.info["name"]
+
+    @classmethod
+    def from_info_dict(cls, info_dict):
+        if "files" in info_dict:
+            fileset = MultiFileSet()
+        else:
+            fileset = SingleFileSet()
+        fileset.info = info_dict
+        return fileset
+
+class MultiFileSet(FileSet):
+    def size(self):
+        return sum(file_["length"] for file_ in self.info["files"])
+
+class SingleFileSet(FileSet):
+    def size(self):
+        return self.info["length"]
 
 class Swarm(object):
     def number_of_seeds(self):
@@ -32,9 +64,13 @@ class Swarm(object):
         else:
             return 0
 
+    def fileset(self):
+        info_dict = bdecode(redis_connection.get(self.info_hash + ".info"))
+        return FileSet.from_info_dict(info_dict)
+
     def name(self):
         try:
-            return bdecode(redis_connection.get(self.info_hash + ".info"))["name"]
+            return self.fileset().name()
         except TypeError:
             return "-"
 
