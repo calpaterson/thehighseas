@@ -36,8 +36,11 @@
 	    % if swarm.name() != "-":
 	    <tr>
 	      <td>${swarm.name()}
-		(<a href="/torrent/${swarm.info_hash}"
-		    >Download</a>)</td>
+		(<a href="/swarm/${swarm.info_hash}/download"
+		    >Download</a>)
+		(<a href="/swarm/${swarm.info_hash}/details"
+		    >Details</a>)
+	      </td>
 	      <td>${swarm.fileset().human_size()}</td>
 	      <td>${swarm.number_of_seeds()}</td>
 	      <td>${swarm.number_of_leechers()}</td>

@@ -3,12 +3,14 @@ import hashlib
 import time
 import struct
 import abc
+from datetime import datetime
 
 from bencode import bencode, bdecode
 from bottle import request
 import simplejson
 import ipaddr
 import hurry.filesize
+import pretty
 
 from constants import redis_connection, announce_url
 
@@ -23,6 +25,9 @@ class FileSet(object):
 
     @abc.abstractmethod
     def size(self):
+        pass
+
+    def files(self):
         pass
 
     def human_size(self):
@@ -44,9 +49,18 @@ class MultiFileSet(FileSet):
     def size(self):
         return sum(file_["length"] for file_ in self.info["files"])
 
+    def files(self):
+        return (("/".join(file_["path"]),
+                 hurry.filesize.size(file_["length"]))
+                for file_ in self.info["files"])
+
 class SingleFileSet(FileSet):
     def size(self):
         return self.info["length"]
+
+    def files(self):
+        return [(self.info["name"],
+                 hurry.filesize.size(self.info["length"]))]
 
 class Swarm(object):
     def number_of_seeds(self):
@@ -94,7 +108,7 @@ class Swarm(object):
 
     def peers(self):
         values = redis_connection.hvals(self.info_hash + ".swarm")
-        return [Peer.from_json(e).to_dict() for e in values]
+        return [Peer.from_json(e) for e in values]
 
     def _save_info_(self, info_as_dict):
         bencoded_info_dict = bencode(info_as_dict)
@@ -119,7 +133,7 @@ class Swarm(object):
         return s
 
     def listing(self, number_of_peers=None, compact=False):
-        s = {"peers": self.peers()}
+        s = {"peers": [p.to_dict() for p in self.peers()]}
         s.update(self.stats())
         return s
 
@@ -163,12 +177,19 @@ class Clock(object):
     def now(self):
         return int(time.time())
 
+    def datetime_now(self):
+        return datetime.now()
+
 _clock_ = Clock()
 
 class Peer(object):
     """A peer (in a swarm)."""
     def __eq__(self, other):
         return self.peer_id == other.peer_id
+
+    def human_last_seen(self, _clock=_clock_):
+        ago = _clock.datetime_now() - datetime.fromtimestamp(self.last_seen)
+        return pretty.date(_clock.datetime_now() - ago)
 
     def is_complete(self):
         """Return True if the peer has completed the fileset, False

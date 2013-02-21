@@ -34,13 +34,18 @@ def index():
     response.set_header("Content-Type", "text/css")
     return open(_css_dir_ + "style.css")
 
-@app.get("/torrent/:hex_hash")
-def torrent(hex_hash):
+@app.get("/swarm/:hex_hash/download")
+def download_metainfo(hex_hash):
     swarm = Swarm.from_hex_hash(hex_hash)
     response.set_header("Content-Type", "application/x-bittorrent")
     response.set_header("Content-Disposition",
                         "filename={name}.torrent".format(name=swarm.name()))
     return swarm.to_metainfo()
+
+@app.get("/swarm/:hex_hash/details")
+def details(hex_hash):
+    swarm = Swarm.from_hex_hash(hex_hash)
+    return _templates_.get_template("details.mako").render(swarm=swarm)
 
 @app.post("/upload")
 def upload():
