@@ -11,8 +11,9 @@ from constants import (
 from rootapp import app
 from domain import Peer, Swarm
 
-def update_peer_info(announcement):
+def update_peer_info(announcement, user_agent):
     peer = Peer.from_announcement(announcement, ip=request.remote_addr)
+    peer.user_agent = user_agent
     swarm = Swarm.from_announcement(announcement)
     if "event" in announcement and announcement["event"] == "completed":
         swarm.completed_by(peer)
@@ -44,5 +45,5 @@ def scrape():
 @app.get("/tracker/announce")
 def announce():
     announcement = request.query
-    update_peer_info(announcement)
+    update_peer_info(announcement, request.headers.get("User-Agent", None))
     return build_listing(announcement)

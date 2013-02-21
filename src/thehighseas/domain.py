@@ -11,6 +11,7 @@ import simplejson
 import ipaddr
 import hurry.filesize
 import pretty
+import pygeoip
 
 from constants import redis_connection, announce_url
 
@@ -182,6 +183,8 @@ class Clock(object):
 
 _clock_ = Clock()
 
+_gi_ = pygeoip.GeoIP("/".join(__file__.split("/")[:-3] + ["/data/GeoIP.dat"]))
+
 class Peer(object):
     """A peer (in a swarm)."""
     def __eq__(self, other):
@@ -198,6 +201,9 @@ class Peer(object):
         """
         return self.left == 0
 
+    def country(self):
+        return _gi_.country_name_by_addr(self.ip.exploded)
+
     def to_json(self):
         return simplejson.dumps(
             {"peer_id": b64encode(self.peer_id),
@@ -206,7 +212,8 @@ class Peer(object):
              "last_seen": self.last_seen,
              "uploaded": self.uploaded,
              "downloaded": self.downloaded,
-             "left": self.left},
+             "left": self.left,
+             "user_agent": self.user_agent},
             separators=(',',':'))
 
     def to_dict(self):
@@ -226,6 +233,7 @@ class Peer(object):
         dict_ = simplejson.loads(json_string)
         peer = cls()
         peer.peer_id = b64decode(dict_["peer_id"])
+        peer.user_agent = dict_["user_agent"]
         peer.ip = ipaddr.IPAddress(dict_["ip"])
         peer.port = dict_["port"]
         peer.last_seen = dict_["last_seen"]

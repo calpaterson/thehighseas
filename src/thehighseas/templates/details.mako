@@ -51,11 +51,15 @@
 	  <table class="table table-striped table-bordered">
 	    <tr>
 	      <th>IP Address</th>
+	      <th>Client</th>
+	      <th>Country</th>
 	      <th>Last Seen</th>
 	    </tr>
 	    % for peer in swarm.peers():
 	    <tr>
 	      <td>${peer.ip}</td>
+	      <td>${peer.user_agent}</td>
+	      <td>${peer.country()}</td>
 	      <td>${peer.human_last_seen()}</td>
 	    </tr>
 	    % endfor
