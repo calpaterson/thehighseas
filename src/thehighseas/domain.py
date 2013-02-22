@@ -28,6 +28,7 @@ class FileSet(object):
     def size(self):
         pass
 
+    @abc.abstractmethod
     def files(self):
         pass
 

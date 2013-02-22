@@ -24,6 +24,7 @@
       <div class="row-fluid">
 	<div class="span12">
           <h2>${swarm.fileset().name()}</h2>
+	  <a href="/swarm/${swarm.info_hash}/download">Download</a>
 	</div>
       </div>
 
@@ -51,6 +52,7 @@
 	  <table class="table table-striped table-bordered">
 	    <tr>
 	      <th>IP Address</th>
+	      <th>Status</th>
 	      <th>Client</th>
 	      <th>Country</th>
 	      <th>Last Seen</th>
@@ -58,6 +60,7 @@
 	    % for peer in swarm.peers():
 	    <tr>
 	      <td>${peer.ip}</td>
+	      <td>${"Seed" if peer.is_complete() else "Leecher"}</td>
 	      <td>${peer.user_agent}</td>
 	      <td>${peer.country()}</td>
 	      <td>${peer.human_last_seen()}</td>
