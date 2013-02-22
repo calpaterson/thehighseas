@@ -51,9 +51,9 @@ class MultiFileSet(FileSet):
         return sum(file_["length"] for file_ in self.info["files"])
 
     def files(self):
-        return (("/".join(file_["path"]),
-                 hurry.filesize.size(file_["length"]))
-                for file_ in self.info["files"])
+        return sorted(("/".join(file_["path"]),
+                       hurry.filesize.size(file_["length"]))
+                      for file_ in self.info["files"])
 
 class SingleFileSet(FileSet):
     def size(self):
@@ -183,7 +183,11 @@ class Clock(object):
 
 _clock_ = Clock()
 
-_gi_ = pygeoip.GeoIP("/".join(__file__.split("/")[:-3] + ["/data/GeoIP.dat"]))
+try:
+    _gi_ = pygeoip.GeoIP("/".join(__file__.split("/")[:-3] + ["data/GeoIP.dat"]))
+except Exception as e:
+    print "GeoIP database not present"
+    _gi_ = None
 
 class Peer(object):
     """A peer (in a swarm)."""
@@ -202,7 +206,8 @@ class Peer(object):
         return self.left == 0
 
     def country(self):
-        return _gi_.country_name_by_addr(self.ip.exploded)
+        if _gi_ is not None:
+            return _gi_.country_name_by_addr(self.ip.exploded)
 
     def to_json(self):
         return simplejson.dumps(
