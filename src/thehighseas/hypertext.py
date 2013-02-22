@@ -18,19 +18,19 @@ _templates_ = TemplateLookup(
 
 @app.get("/")
 def index():
-    return _templates_.get_template("index.mako").render(swarms=Swarm.all())
+    return _templates_.get_template("index.mako").render(swarms=Swarm.nonsecret())
 
 @app.get("/upload")
 def upload_form():
     return _templates_.get_template("upload.mako").render(announce_url=announce_url)
 
 @app.get("/css/bootstrap.min.css")
-def index():
+def bootstrap():
     response.set_header("Content-Type", "text/css")
     return open(_css_dir_ + "bootstrap.min.css")
 
 @app.get("/css/style.css")
-def index():
+def style():
     response.set_header("Content-Type", "text/css")
     return open(_css_dir_ + "style.css")
 

@@ -33,7 +33,6 @@
 	      <td>Infohash</td>
 	    </tr>
 	    % for swarm in swarms:
-	    % if swarm.name() != "-":
 	    <tr>
 	      <td>${swarm.name()}
 		(<a href="/swarm/${swarm.info_hash}/download"
@@ -47,7 +46,6 @@
 	      <td>${swarm.times_downloaded()}</td>
 	      <td class="infohash">${swarm.info_hash}</td>
 	    </tr>
-	    % endif
             % endfor
 	  </table>
 	</div>
