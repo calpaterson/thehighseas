@@ -4,6 +4,7 @@ import time
 import struct
 import abc
 from datetime import datetime
+from itertools import islice
 
 from bencode import bencode, bdecode
 from bottle import request
@@ -109,8 +110,8 @@ class Swarm(object):
             raise NoInfoException()
 
     def peers(self):
-        values = redis_connection.hvals(self.info_hash + ".swarm")
-        return [Peer.from_json(e) for e in values]
+        return (Peer.from_json(e) for e in
+                redis_connection.hvals(self.info_hash + ".swarm"))
 
     def _save_info_(self, info_as_dict):
         bencoded_info_dict = bencode(info_as_dict)
@@ -135,7 +136,9 @@ class Swarm(object):
         return s
 
     def listing(self, number_of_peers=None, compact=False):
-        s = {"peers": [p.to_dict() for p in self.peers()]}
+        peers = islice((p.to_dict() for p in self.peers()),
+                       number_of_peers)
+        s = {"peers": list(peers)}
         s.update(self.stats())
         return s
 

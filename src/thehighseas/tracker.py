@@ -22,15 +22,6 @@ def update_peer_info(announcement, user_agent):
     else:
         swarm.update(peer)
 
-def build_listing(announcement):
-    swarm = Swarm.from_announcement(announcement)
-    listing = swarm.listing()
-    listing.update({
-            "tracker id": tracker_id,
-            "interval": interval
-            })
-    return bencode(listing)
-
 @app.get("/tracker/scrape")
 def scrape():
     try:
@@ -45,5 +36,14 @@ def scrape():
 @app.get("/tracker/announce")
 def announce():
     announcement = request.query
+    swarm = Swarm.from_announcement(announcement)
+
     update_peer_info(announcement, request.headers.get("User-Agent", None))
-    return build_listing(announcement)
+
+    listing = swarm.listing(
+        number_of_peers=int(request.query.get("numwant", 50)))
+    listing.update({
+            "tracker id": tracker_id,
+            "interval": interval
+            })
+    return bencode(listing)
