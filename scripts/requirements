@@ -5,3 +5,5 @@ redis==2.7.2
 simplejson==3.0.7
 ipaddr==2.1.7
 hurry.filesize==0.9
+py-pretty==1
+pygeoip==0.2.6
