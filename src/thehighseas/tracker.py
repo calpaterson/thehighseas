@@ -30,7 +30,7 @@ def scrape():
     except KeyError:
         stats = {}
         for swarm in Swarm.nonsecret():
-            stats.update(swam.stats())
+            stats.update(swarm.stats())
         return bencode(stats)
 
 @app.get("/tracker/announce")
