@@ -3,7 +3,7 @@ import hashlib
 import time
 import struct
 import abc
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import islice
 
 from bencode import bencode, bdecode
@@ -67,12 +67,12 @@ class SingleFileSet(FileSet):
 
 class Swarm(object):
     def number_of_seeds(self):
-        return sum(1 for p in redis_connection.hvals(self.info_hash + ".swarm")
-                     if Peer.from_json(p).is_complete())
+        return sum(1 for p in self.peers()
+                     if p.is_complete())
 
     def number_of_leechers(self):
-        return sum(1 for p in redis_connection.hvals(self.info_hash + ".swarm")
-                     if not Peer.from_json(p).is_complete())
+        return sum(1 for p in self.peers()
+                     if not p.is_complete())
 
     def times_downloaded(self):
         times = redis_connection.hget("completions", self.info_hash)
@@ -110,8 +110,14 @@ class Swarm(object):
             raise NoInfoException()
 
     def peers(self):
-        return (Peer.from_json(e) for e in
-                redis_connection.hvals(self.info_hash + ".swarm"))
+        peers = [Peer.from_json(e) for e in
+                redis_connection.hvals(self.info_hash + ".swarm")]
+        old_peers = [p for p in peers if p.is_old()]
+        for old_peer in old_peers:
+            redis_connection.hdel(self.info_hash + ".swarm", old_peer.peer_id)
+        return (p for p in peers if p not in old_peers)
+
+
 
     def _save_info_(self, info_as_dict):
         bencoded_info_dict = bencode(info_as_dict)
@@ -201,6 +207,12 @@ class Peer(object):
     def human_last_seen(self, _clock=_clock_):
         ago = _clock.datetime_now() - datetime.fromtimestamp(self.last_seen)
         return pretty.date(_clock.datetime_now() - ago)
+
+    def is_old(self):
+        global _clock_
+        half_hour_ago = _clock_.now() - timedelta(minutes=30).seconds
+        return self.last_seen < half_hour_ago
+
 
     def is_complete(self):
         """Return True if the peer has completed the fileset, False
